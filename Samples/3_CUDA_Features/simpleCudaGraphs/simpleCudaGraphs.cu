@@ -26,6 +26,8 @@
  */
 
 
+#include <filesystem>
+#include <string>
 #include <vector>
 
 #include <cuda_runtime.h>
@@ -270,6 +272,13 @@ void cudaGraphsManual(float* inputVec_h, float* inputVec_d, double* outputVec_d,
     checkCudaErrors(cudaGraphGetNodes(graph, nodes, &numNodes));
     printf("\nNum of nodes in the graph created manually = %zu\n", numNodes);
 
+    cudaGraphDebugDotFlags dot_flag = cudaGraphDebugDotFlagsVerbose;
+    std::string dot_filename =
+        std::string(std::filesystem::current_path().c_str()) +
+        std::string("/gen_graph_manual.dot");
+    checkCudaErrors(
+        cudaGraphDebugDotPrint(graph, dot_filename.c_str(), dot_flag));
+
     cudaGraphExec_t graphExec;
     checkCudaErrors(cudaGraphInstantiate(&graphExec, graph, NULL, NULL, 0));
 
@@ -360,6 +369,13 @@ void cudaGraphsUsingStreamCapture(float* inputVec_h, float* inputVec_d,
     printf(
         "\nNum of nodes in the graph created using stream capture API = %zu\n",
         numNodes);
+
+    cudaGraphDebugDotFlags dot_flag = cudaGraphDebugDotFlagsVerbose;
+    std::string dot_filename =
+        std::string(std::filesystem::current_path().c_str()) +
+        std::string("/stream_capture.dot");
+    checkCudaErrors(
+        cudaGraphDebugDotPrint(graph, dot_filename.c_str(), dot_flag));
 
     cudaGraphExec_t graphExec;
     checkCudaErrors(cudaGraphInstantiate(&graphExec, graph, NULL, NULL, 0));
